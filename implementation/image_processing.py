@@ -19,8 +19,20 @@ import cv2
 import interfaces
 
 import numpy as np
+import time
+from functools import wraps
 
-
+def time_execution(func):
+    """Декоратор для измерения времени выполнения методов"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        execution_time = end_time - start_time
+        print(f"Метод {func.__name__} [cv2] выполнен за {execution_time:.4f} секунд")
+        return result
+    return wrapper
 class ImageProcessing(interfaces.IImageProcessing):
     """
     Реализация интерфейса IImageProcessing с использованием библиотеки OpenCV.
@@ -85,6 +97,7 @@ class ImageProcessing(interfaces.IImageProcessing):
                           for i in range(256)]).astype("uint8")
         return cv2.LUT(image, table)
 
+    @time_execution
     def edge_detection(self, image: np.ndarray) -> np.ndarray:
         """
         Выполняет обнаружение границ на изображении.
@@ -102,6 +115,7 @@ class ImageProcessing(interfaces.IImageProcessing):
         edges = cv2.Canny(gray, 100, 200)
         return edges
 
+    @time_execution
     def corner_detection(self, image: np.ndarray) -> np.ndarray:
         """
         Выполняет обнаружение углов на изображении.
@@ -123,6 +137,7 @@ class ImageProcessing(interfaces.IImageProcessing):
         result[dst > 0.01 * dst.max()] = [255, 0, 0]
         return result
 
+    @time_execution
     def circle_detection(self, image: np.ndarray) -> np.ndarray:
         """
         Выполняет обнаружение окружностей на изображении.

@@ -15,11 +15,11 @@ main.py
 Аргументы:
     метод: edges | corners | circles
     путь_к_изображению: путь к входному изображению
-    -o, --output: путь для сохранения результата (по умолчанию: <имя_входного_файла>_result.png)
+    -o, --output: базовый путь для сохранения результатов (по умолчанию: <имя_входного_файла>_result)
 
 Пример:
     python main.py edges input.jpg
-    python main.py corners input.jpg -o corners_result.png
+    python main.py corners input.jpg -o corners_result
 
 Автор: [Ваше имя]
 """
@@ -30,17 +30,19 @@ import os
 import cv2
 
 from implementation import ImageProcessing
+from implementation_self import ImageProcessingSelf
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Обработка изображения с помощью методов ImageProcessing (OpenCV).",
+        description="Обработка изображения с помощью методов ImageProcessing (OpenCV и собственная реализация).",
     )
     parser.add_argument(
         "method",
         choices=[
             "edges",
             "corners",
-            "circles",
+            "circles"
         ],
         help="Метод обработки: edges, corners, circles",
     )
@@ -50,7 +52,7 @@ def main() -> None:
     )
     parser.add_argument(
         "-o", "--output",
-        help="Путь для сохранения результата (по умолчанию: <input>_result.png)",
+        help="Базовый путь для сохранения результатов (по умолчанию: <input>_result)",
     )
 
     args = parser.parse_args()
@@ -62,28 +64,38 @@ def main() -> None:
         return
 
     processor = ImageProcessing()
+    processor_self = ImageProcessingSelf()
 
-    # Выбор метода
+    # Определение базового пути для сохранения
+    if args.output:
+        base_output_path = args.output
+    else:
+        base, ext = os.path.splitext(args.input)
+        base_output_path = f"{base}_result"
+
+    # Обработка OpenCV версией
     if args.method == "edges":
-        result = processor.edge_detection(image)
+        result_cv2 = processor.edge_detection(image)
+        result_self = processor_self.edge_detection(image)
     elif args.method == "corners":
-        result = processor.corner_detection(image)
+        result_cv2 = processor.corner_detection(image)
+        result_self = processor_self.corner_detection(image)
     elif args.method == "circles":
-        result = processor.circle_detection(image)
+        result_cv2 = processor.circle_detection(image)
+        result_self = processor_self.circle_detection(image)
     else:
         print("Ошибка: неизвестный метод")
         return
 
-    # Определение пути для сохранения
-    if args.output:
-        output_path = args.output
-    else:
-        base, ext = os.path.splitext(args.input)
-        output_path = f"{base}_result.png"
+    # Сохранение результатов
+    output_cv2 = f"{base_output_path}_cv2.png"
+    output_self = f"{base_output_path}_self.png"
 
-    # Сохранение результата
-    cv2.imwrite(output_path, result)
-    print(f"Результат сохранён в {output_path}")
+    cv2.imwrite(output_cv2, result_cv2)
+    cv2.imwrite(output_self, result_self)
+
+    print(f"Результат OpenCV сохранён в {output_cv2}")
+    print(f"Результат собственной реализации сохранён в {output_self}")
 
 
 if __name__ == "__main__":
