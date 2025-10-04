@@ -42,7 +42,8 @@ def main() -> None:
         choices=[
             "edges",
             "corners",
-            "circles"
+            "circles",
+            "gray"
         ],
         help="Метод обработки: edges, corners, circles",
     )
@@ -58,7 +59,8 @@ def main() -> None:
     args = parser.parse_args()
 
     # Загрузка изображения
-    image = cv2.imread(args.input)
+    #image = cv2.imread(args.input, cv2.IMREAD_UNCHANGED)
+    image = cv2.imread(args.input, cv2.IMREAD_UNCHANGED)
     if image is None:
         print(f"Ошибка: не удалось загрузить изображение {args.input}")
         return
@@ -73,13 +75,15 @@ def main() -> None:
         base, ext = os.path.splitext(args.input)
         base_output_path = f"{base}_result"
 
-    # Обработка OpenCV версией
+    # Обработка
     if args.method == "edges":
         result_cv2 = processor.edge_detection(image)
         result_self = processor_self.edge_detection(image)
     elif args.method == "corners":
         result_cv2 = processor.corner_detection(image)
         result_self = processor_self.corner_detection(image)
+    elif args.method == "gray":
+        result_self = processor_self._rgb_to_grayscale(image)
     elif args.method == "circles":
         result_cv2 = processor.circle_detection(image)
         result_self = processor_self.circle_detection(image)

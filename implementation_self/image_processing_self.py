@@ -23,8 +23,7 @@ class ImageProcessingSelf(interfaces.IImageProcessing):
     Класс обработки изображений с помощью numpy
     """
 
-    def _pad_image(self: 'ImageProcessing', image: np.ndarray,
-                   pad_h: int, pad_w: int) -> np.ndarray:
+    def _pad_image(self: 'ImageProcessingSelf', image: np.ndarray,pad_h: int, pad_w: int) -> np.ndarray:
         """
         Метод для добавления отступов к изображению
 
@@ -36,52 +35,58 @@ class ImageProcessingSelf(interfaces.IImageProcessing):
         Returns:
             np.ndarray: Изображение с отступами
         """
-        return np.pad(image, ((pad_h, pad_h), (pad_w, pad_w)), mode='constant')
+        if image.ndim == 2:  # ч/б
+            return np.pad(image, ((pad_h, pad_h), (pad_w, pad_w)), mode='constant')
+        elif image.ndim == 3:  # цветное (RGB)
+            return np.pad(image, ((pad_h, pad_h), (pad_w, pad_w), (0, 0)), mode='constant')
+        else:
+            raise ValueError("Unsupported image dimensions: expected 2D or 3D array")
 
-    def _convolution(self: 'ImageProcessing', image: np.ndarray,
-                     kernel: np.ndarray, padding: str = "same",
-                     pad_h: int = 0, pad_w: int = 0) -> np.ndarray:
+    def _convolution(self: 'ImageProcessingSelf',
+                     image: np.ndarray,
+                     kernel: np.ndarray,
+                     padding: str = "same",
+                     pad_h: int = 0,
+                     pad_w: int = 0) -> np.ndarray:
         """
-        Выполняет свёртку изображения с заданным ядром.
-
-        Args:
-            image (np.ndarray): Входное изображение (чёрно-белое или цветное).
-            kernel (np.ndarray): Ядро свёртки (матрица).
-            padding (str): Формат выставления отступов.
-            pad_h (int): Отступ по вертикали.
-            pad_w (int): Отступ по горизонтали.
-
-        Returns:
-            np.ndarray: Изображение после применения свёртки.
+        Быстрая свёртка через im2col (без циклов).
         """
-
         if padding == "same":
-            kernel_h, kernel_w = kernel.shape
-            pad_h = kernel_h // 2
-            pad_w = kernel_w // 2
+            kh, kw = kernel.shape
+            pad_h, pad_w = kh // 2, kw // 2
             image = self._pad_image(image, pad_h, pad_w)
 
-        kern_h, kern_w = kernel.shape
-        img_h, img_w = image.shape[0:2]
-        out_h, out_w, out_d = img_h - kern_h + 1, img_w - kern_w + 1, image.ndim
-        if image.ndim == 2:
-            conv_res = np.zeros((out_h, out_w))
-            for heigh in range(out_h):
-                for wid in range(out_w):
-                    conv_res[heigh, wid] = np.sum(
-                        image[heigh:heigh+kern_h, wid:wid+kern_w] * kernel)
-        else:
-            out_d = image.shape[2]
-            conv_res = np.zeros((out_h, out_w, out_d))
-            for heigh in range(out_h):
-                for wid in range(out_w):
-                    for dim in range(out_d):
-                        conv_res[heigh, wid, dim] = np.sum(
-                            image[heigh:heigh+kern_h, wid:wid+kern_w, dim] * kernel)
+        H, W = image.shape[:2]
+        kh, kw = kernel.shape
 
-        return conv_res
+        if image.ndim == 2:  # ч/б
+            # im2col
+            shape = (H - kh + 1, W - kw + 1, kh, kw)
+            strides = image.strides * 2
+            patches = np.lib.stride_tricks.as_strided(image, shape=shape, strides=strides)
+            patches = patches.reshape(-1, kh * kw)
 
-    def _rgb_to_grayscale(self: 'ImageProcessing', image: np.ndarray) -> np.ndarray:
+            print(patches.size)
+            conv_res = patches @ kernel.flatten()
+
+            print(f"использую ЧБ")
+            return conv_res.reshape(H - kh + 1, W - kw + 1)
+
+        else:  # RGB
+            out_channels = []
+            for c in range(image.shape[2]):
+                channel = image[:, :, c]
+                shape = (H - kh + 1, W - kw + 1, kh, kw)
+                strides = channel.strides * 2
+                patches = np.lib.stride_tricks.as_strided(channel, shape=shape, strides=strides)
+                patches = patches.reshape(-1, kh * kw)
+                conv_res = patches @ kernel.flatten()
+                out_channels.append(conv_res.reshape(H - kh + 1, W - kw + 1))
+
+                print(f"использую RGB")
+            return np.stack(out_channels, axis=2)
+
+    def _rgb_to_grayscale(self: 'ImageProcessingSelf', image: np.ndarray) -> np.ndarray:
         """
         Преобразует RGB-изображение в оттенки серого.
 
@@ -94,13 +99,14 @@ class ImageProcessingSelf(interfaces.IImageProcessing):
         Raises:
             ValueError: Некорректный формат изображения
         """
-        if image.ndim != 3:
-            raise ValueError('Incorrect image format. Required format: RGB')
+        if image.ndim == 2:  # Уже ЧБ
+            return image
+        elif image.ndim == 3 and image.shape[2] == 3:  # RGB
+            return (np.dot(image[:, :, :3], [0.299, 0.587, 0.114])).astype(np.uint8)
+        else:
+            raise ValueError(f'Unsupported image format: {image.shape}')
 
-        return (np.dot(image[:, :, :3], [0.299, 0.587, 0.114])).astype(np.uint8)
-
-    def _gamma_correction(self: 'ImageProcessing', image: np.ndarray,
-                          gamma: float) -> np.ndarray:
+    def _gamma_correction(self: 'ImageProcessingSelf', image: np.ndarray,gamma: float) -> np.ndarray:
         """
         Применяет гамма-коррекцию к изображению.
 
@@ -119,92 +125,127 @@ class ImageProcessingSelf(interfaces.IImageProcessing):
         if gamma <= 0:
             raise ValueError("Incorrect gamma value. Required values > 0")
 
-        normalized = image / 255.0
-        corrected = np.power(normalized, 1.0 / gamma)
-        corrected = np.uint8(corrected * 255)
+        normalized = image / 255.0                      # перевод в диапазон от 0 до 1
+        corrected = np.power(normalized, 1.0 / gamma)   # степень
+        corrected = np.uint8(corrected * 255)           # перевод в диапазон от 0 до 255
         return corrected
 
-    @time_execution
-    def edge_detection(self: 'ImageProcessing', image: np.ndarray) -> np.ndarray:
-        """
-        Выполняет обнаружение границ на изображении с использованием оператора Собеля.
-        Возвращает бинарное изображение с яркими белыми границами на черном фоне.
+    def otsu_threshold(self: 'ImageProcessingSelf', data: np.ndarray) -> float:
+        """Реализация алгоритма Отсу для автоматического определения порога."""
+        hist, bins = np.histogram(data.flatten(), bins=256, range=[0, 256])  # Изображение в 1D массив
+        # hist - массив из 256 элементов, где каждый элемент показывает, сколько пикселей имеет данную яркость
 
-        Args:
-            image (np.ndarray): Входное изображение (RGB).
+        bin_centers = (bins[:-1] + bins[1:]) / 2
 
-        Returns:
-            np.ndarray: Бинарное изображение с границами (0 - черный, 255 - белый).
+        total = len(data.flatten())  # общее количество пикселей
+        sum_total = np.sum(bin_centers * hist)  # сумма всех значений яркости
 
-        Raises:
-            ValueError: Некорректный формат изображения
-        """
-        if image.ndim != 3 or image.shape[2] != 3:
-            raise ValueError('Incorrect image format. Required format: RGB (3 channels)')
+        sum_b = 0
+        w_b = 0
+        max_variance = 0
+        threshold = 0
 
-        # Преобразование в оттенки серого
-        grayscale_image = self._rgb_to_grayscale(image)
+        for i in range(256):  # перебираем все возможные пороги от 0 до 255
+            w_b += hist[i]  # накопленный вес фона: пиксели ≤ текущего порога
+            if w_b == 0:
+                continue
 
-        # Ядра Собеля для горизонтальных и вертикальных границ
-        sobel_x = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]], dtype=np.float32)
-        sobel_y = np.array([[-1, -2, -1], [0, 0, 0], [1, 2, 1]], dtype=np.float32)
+            w_f = total - w_b  # вес переднего плана: пиксели > текущего порога
+            if w_f == 0:
+                break
 
-        # Свертка с ядрами
-        edges_x = self._convolution(grayscale_image, sobel_x, padding="same")
-        edges_y = self._convolution(grayscale_image, sobel_y, padding="same")
+            sum_b += bin_centers[i] * hist[i]  # накопленная сумма яркостей фона
+            m_b = sum_b / w_b  # средняя яркость фона
+            m_f = (sum_total - sum_b) / w_f  # средняя яркость переднего плана
 
-        # Вычисление магнитуды градиента
-        gradient_magnitude = np.hypot(edges_x, edges_y)
+            # межклассовая дисперсия максимальна, если классы хорошо разделены и значимы
+            variance = w_b * w_f * (m_b - m_f) ** 2
 
-        # Автоматическое определение порога (метод Отсу)
-        def otsu_threshold(data: np.ndarray) -> float:
-            """Реализация алгоритма Отсу для автоматического определения порога."""
-            hist, bins = np.histogram(data.flatten(), bins=256, range=[0, 256])
-            bin_centers = (bins[:-1] + bins[1:]) / 2
+            if variance > max_variance:
+                max_variance = variance
+                threshold = bin_centers[i]  # запоминаем лучший порог
 
-            total = len(data.flatten())
-            sum_total = np.sum(bin_centers * hist)
+        return threshold
 
-            sum_b = 0
-            w_b = 0
-            max_variance = 0
-            threshold = 0
+    def _get_sobel_kernels(self: 'ImageProcessingSelf') -> tuple[np.ndarray, np.ndarray]:
+        """Возвращает ядра Собеля для X и Y направлений"""
+        sobel_x = np.array([[-1, 0, 1],
+                                [-2, 0, 2],
+                                [-1, 0, 1]], dtype=np.float32)
 
-            for i in range(256):
-                w_b += hist[i]
-                if w_b == 0:
-                    continue
+        sobel_y = np.array([[-1, -2, -1],
+                                [0, 0, 0],
+                                [1, 2, 1]], dtype=np.float32)
+        return sobel_x, sobel_y
 
-                w_f = total - w_b
-                if w_f == 0:
-                    break
+    def _apply_threshold(self: 'ImageProcessingSelf', gradient_magnitude: np.ndarray, multiplier: float = 4.0) -> np.ndarray:
+        """Применяет порог Отсу и создает бинарное изображение"""
+        threshold_value = self.otsu_threshold(gradient_magnitude)
 
-                sum_b += bin_centers[i] * hist[i]
-                m_b = sum_b / w_b
-                m_f = (sum_total - sum_b) / w_f
+        enhanced_threshold = threshold_value * multiplier
 
-                variance = w_b * w_f * (m_b - m_f) ** 2
-
-                if variance > max_variance:
-                    max_variance = variance
-                    threshold = bin_centers[i]
-
-            return threshold
-
-        # Применение порога для получения бинарного изображения
-        threshold_value = otsu_threshold(gradient_magnitude)
-
-        # Дополнительное усиление: оставляем только самые яркие пиксели
-        # Можно регулировать множитель для более/менее агрессивного порога
-        enhanced_threshold = threshold_value * 4.0
-
-        # Создание бинарного изображения
         binary_edges = np.zeros_like(gradient_magnitude, dtype=np.uint8)
         binary_edges[gradient_magnitude > enhanced_threshold] = 255
 
         return binary_edges
 
-    def _gauss_kernel(self: 'ImageProcessing', std: float = 0.5,
+    def _compute_gradients(self: 'ImageProcessingSelf', image: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        """Вычисляет градиенты по X и Y с помощью ядер Собеля"""
+        sobel_x, sobel_y = self._get_sobel_kernels()
+
+        gx = self._convolution(image, sobel_x, padding="same")
+        gy = self._convolution(image, sobel_y, padding="same")
+
+        return gx, gy
+
+    def _edge_detection_color(self: 'ImageProcessingSelf', image: np.ndarray) -> np.ndarray:
+        img = image.astype(np.float32)
+
+        # Используем общий метод для градиентов
+        gx, gy = self._compute_gradients(img)
+
+        A = np.sum(gx * gx, axis=2)
+        B = np.sum(gx * gy, axis=2)
+        C_ = np.sum(gy * gy, axis=2)
+
+        tmp = np.sqrt((A - C_) ** 2 + 4 * (B ** 2))
+        lambda_max = 0.5 * (A + C_ + tmp)
+        gradient_magnitude = np.sqrt(lambda_max)
+
+        # Метод для порога
+        return self._apply_threshold(gradient_magnitude, multiplier=4.5)
+
+    def _edge_detection_grayscale(self: 'ImageProcessingSelf', image: np.ndarray) -> np.ndarray:
+        img = image.astype(np.float32)
+
+        # Используем общий метод для градиентов
+        gx, gy = self._compute_gradients(img)
+
+        gradient_magnitude = np.sqrt(gx ** 2 + gy ** 2)
+
+        # Метод для порога
+        return self._apply_threshold(gradient_magnitude, multiplier=4.0)
+
+
+    @time_execution
+    def edge_detection(self: 'ImageProcessingSelf', image: np.ndarray) -> np.ndarray:
+        """
+        Выполняет обнаружение границ на изображении.
+
+        Args:
+            image (np.ndarray): Входное изображение (RGB или ЧБ)
+
+        Returns:
+            np.ndarray: Бинарное изображение с границами
+        """
+        if image.ndim == 2:  # ЧБ изображение
+            return self._edge_detection_grayscale(image)
+        elif image.ndim == 3 and image.shape[2] == 3:  # RGB изображение
+            return self._edge_detection_color(image)
+        else:
+            raise ValueError(f'Unsupported image format: {image.shape}')
+
+    def _gauss_kernel(self: 'ImageProcessingSelf', std: float = 0.5,
                       window_size: int = 3) -> np.ndarray:
         """
         Метод генерации гауссова ядра
@@ -216,14 +257,14 @@ class ImageProcessingSelf(interfaces.IImageProcessing):
         Returns:
             np.ndarray: Матрица с гауссовым ядром
         """
-        ax = np.arange(-window_size // 2 + 1., window_size // 2 + 1.)
-        xx, yy = np.meshgrid(ax, ax)
+        ax = np.arange(-window_size // 2 + 1., window_size // 2 + 1.)   # Формируем координаты по одной оси для не чётого window_size
+        xx, yy = np.meshgrid(ax, ax)    # Двоичная сетка кордов
         gauss_kernel = np.exp(-(xx ** 2 + yy ** 2) / (2. * std ** 2))
-        gauss_kernel /= np.sum(gauss_kernel)
+        gauss_kernel /= np.sum(gauss_kernel)    # Нормируем ядро, чтобы сумма элементов =0. Фильтр не должен менять яркость
         return gauss_kernel
 
     @time_execution
-    def corner_detection(self: 'ImageProcessing', image: np.ndarray,
+    def corner_detection(self: 'ImageProcessingSelf', image: np.ndarray,
                          sensitivity: float = 0.04,
                          threshold: float = 0.01) -> np.ndarray:
         """
@@ -240,17 +281,17 @@ class ImageProcessingSelf(interfaces.IImageProcessing):
         Raises:
             ValueError: Некорректный формат изображения
         """
-        if image.ndim != 3:
-            raise ValueError('Incorrect image format. Required format: RGB')
+        if image.ndim == 2:  # ЧБ изображение
+            grayscale_image = image
+        elif image.ndim == 3:  # RGB изображение
+            grayscale_image = self._rgb_to_grayscale(image)
+        else:
+            raise ValueError(f'Unsupported image format: {image.shape}')
 
-        grayscale_image = self._rgb_to_grayscale(image)
-
-        sobel_x = np.array([[-1, 0, 1],
-                            [-2, 0, 2],
-                            [-1, 0, 1]])
+        sobel_x, sobel_y = self._get_sobel_kernels()
 
         edges_x = self._convolution(grayscale_image, sobel_x, padding="same")
-        edges_y = self._convolution(grayscale_image, sobel_x.T, padding="same")
+        edges_y = self._convolution(grayscale_image, sobel_y, padding="same")
 
         edges_xx = edges_x * edges_x
         edges_yy = edges_y * edges_y
@@ -265,15 +306,15 @@ class ImageProcessingSelf(interfaces.IImageProcessing):
 
         det = smoothed_xx * smoothed_yy - smoothed_xy * smoothed_xy
         trace = smoothed_xx + smoothed_yy
-        angle_feature = det - sensitivity * (trace ** 2)
+        angle_feature = det - sensitivity * (trace ** 2)    # Харис
 
-        result_image = np.stack([grayscale_image] * 3, axis=-1)
-        result_image[angle_feature > threshold * angle_feature.max()] = [0, 0, 255]
+        result_image = np.stack([grayscale_image] * 3, axis=-1)     # Взращаемся к RGB
+        result_image[angle_feature > threshold * angle_feature.max()] = [0, 0, 255]     # Отмечаем точки
 
         return result_image
 
     @time_execution
-    def circle_detection(self: 'ImageProcessing', image: np.ndarray) -> None:
+    def circle_detection(self: 'ImageProcessingSelf', image: np.ndarray) -> None:
         """
         Метод выделения кругов с использованием алгоритма Хафа
 

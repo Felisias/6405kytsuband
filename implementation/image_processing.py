@@ -77,7 +77,13 @@ class ImageProcessing(interfaces.IImageProcessing):
         Returns:
             np.ndarray: Одноканальное изображение в оттенках серого.
         """
-        return cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+        if image.ndim == 2:  # Уже ЧБ изображение
+            return image
+        elif image.ndim == 3:  # Цветное изображение
+            # OpenCV загружает как BGR, поэтому используем BGR2GRAY
+            return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        else:
+            raise ValueError(f'Unsupported image format: {image.shape}')
 
     def _gamma_correction(self, image: np.ndarray, gamma: float) -> np.ndarray:
         """
@@ -111,6 +117,13 @@ class ImageProcessing(interfaces.IImageProcessing):
         Returns:
             np.ndarray: Одноканальное изображение с выделенными границами.
         """
+        if image.ndim == 2:  # Уже ЧБ
+            gray = image
+        elif image.ndim == 3:  # RGB/BGR
+            gray = self._rgb_to_grayscale(image)
+        else:
+            raise ValueError(f'Unsupported image format: {image.shape}')
+
         gray = self._rgb_to_grayscale(image)
         edges = cv2.Canny(gray, 100, 200)
         return edges
