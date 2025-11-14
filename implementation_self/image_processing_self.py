@@ -69,7 +69,7 @@ class ImageProcessingSelf(interfaces.IImageProcessing):
             print(patches.size)
             conv_res = patches @ kernel.flatten()
 
-            print(f"использую ЧБ")
+            #print(f"использую ЧБ")
             return conv_res.reshape(H - kh + 1, W - kw + 1)
 
         else:  # RGB
@@ -83,7 +83,7 @@ class ImageProcessingSelf(interfaces.IImageProcessing):
                 conv_res = patches @ kernel.flatten()
                 out_channels.append(conv_res.reshape(H - kh + 1, W - kw + 1))
 
-                print(f"использую RGB")
+                #print(f"использую RGB")
             return np.stack(out_channels, axis=2)
 
     def _rgb_to_grayscale(self: 'ImageProcessingSelf', image: np.ndarray) -> np.ndarray:
@@ -213,7 +213,7 @@ class ImageProcessingSelf(interfaces.IImageProcessing):
         gradient_magnitude = np.sqrt(lambda_max)
 
         # Метод для порога
-        return self._apply_threshold(gradient_magnitude, multiplier=4.5)
+        return self._apply_threshold(gradient_magnitude, multiplier=2.5)
 
     def _edge_detection_grayscale(self: 'ImageProcessingSelf', image: np.ndarray) -> np.ndarray:
         img = image.astype(np.float32)
@@ -224,7 +224,7 @@ class ImageProcessingSelf(interfaces.IImageProcessing):
         gradient_magnitude = np.sqrt(gx ** 2 + gy ** 2)
 
         # Метод для порога
-        return self._apply_threshold(gradient_magnitude, multiplier=4.0)
+        return self._apply_threshold(gradient_magnitude, multiplier=2.0)
 
 
     @time_execution
