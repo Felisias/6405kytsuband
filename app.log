@@ -1,0 +1,39 @@
+2025-12-13 15:31:55 - PID=8484 - INFO - cat_image_processor.py:296 - run_async() - === Starting cat image processing pipeline ===
+2025-12-13 15:31:55 - PID=8484 - INFO - cat_image_processor.py:109 - download_data() - Starting image download (3)
+2025-12-13 15:31:55 - PID=8484 - DEBUG - cat_image_processor.py:116 - download_data() - Requested 3 cats
+2025-12-13 15:31:56 - PID=8484 - ERROR - cat_image_processor.py:308 - run_async() - Error in run_async: Cannot serialize non-str key None
+2025-12-13 15:31:56 - PID=8484 - ERROR - main.py:26 - main() - Application failed with error: Cannot serialize non-str key None
+2025-12-13 15:33:39 - PID=16664 - INFO - cat_image_processor.py:296 - run_async() - === Starting cat image processing pipeline ===
+2025-12-13 15:33:39 - PID=16664 - INFO - cat_image_processor.py:109 - download_data() - Starting image download (3)
+2025-12-13 15:33:39 - PID=16664 - DEBUG - cat_image_processor.py:116 - download_data() - Requested 3 cats
+2025-12-13 15:33:39 - PID=16664 - DEBUG - cat_image_processor.py:120 - download_data() - Received response with 3 cats
+2025-12-13 15:33:39 - PID=16664 - DEBUG - cat_image_processor.py:123 - download_data() - Requesting cat images
+2025-12-13 15:33:39 - PID=16664 - DEBUG - cat_image_processor.py:87 - _download_image() - Method _download_image called for image with index: 0
+2025-12-13 15:33:39 - PID=16664 - DEBUG - cat_image_processor.py:87 - _download_image() - Method _download_image called for image with index: 1
+2025-12-13 15:33:39 - PID=16664 - DEBUG - cat_image_processor.py:87 - _download_image() - Method _download_image called for image with index: 2
+2025-12-13 15:33:39 - PID=16664 - DEBUG - cat_image_processor.py:87 - _download_image() - Method _download_image called for image with index: 3
+2025-12-13 15:33:39 - PID=16664 - DEBUG - cat_image_processor.py:87 - _download_image() - Method _download_image called for image with index: 4
+2025-12-13 15:33:39 - PID=16664 - DEBUG - cat_image_processor.py:87 - _download_image() - Method _download_image called for image with index: 5
+2025-12-13 15:33:39 - PID=16664 - DEBUG - cat_image_processor.py:87 - _download_image() - Method _download_image called for image with index: 6
+2025-12-13 15:33:39 - PID=16664 - DEBUG - cat_image_processor.py:87 - _download_image() - Method _download_image called for image with index: 7
+2025-12-13 15:33:39 - PID=16664 - DEBUG - cat_image_processor.py:87 - _download_image() - Method _download_image called for image with index: 8
+2025-12-13 15:33:39 - PID=16664 - DEBUG - cat_image_processor.py:87 - _download_image() - Method _download_image called for image with index: 9
+2025-12-13 15:34:10 - PID=16664 - ERROR - cat_image_processor.py:308 - run_async() - Error in run_async: 
+2025-12-13 15:34:10 - PID=16664 - ERROR - main.py:26 - main() - Application failed with error: 
+2025-12-13 15:34:41 - PID=18904 - INFO - cat_image_processor.py:296 - run_async() - === Starting cat image processing pipeline ===
+2025-12-13 15:34:41 - PID=18904 - INFO - cat_image_processor.py:109 - download_data() - Starting image download (3)
+2025-12-13 15:34:41 - PID=18904 - DEBUG - cat_image_processor.py:116 - download_data() - Requested 3 cats
+2025-12-13 15:34:42 - PID=18904 - DEBUG - cat_image_processor.py:120 - download_data() - Received response with 3 cats
+2025-12-13 15:34:42 - PID=18904 - DEBUG - cat_image_processor.py:123 - download_data() - Requesting cat images
+2025-12-13 15:34:42 - PID=18904 - DEBUG - cat_image_processor.py:87 - _download_image() - Method _download_image called for image with index: 0
+2025-12-13 15:34:42 - PID=18904 - DEBUG - cat_image_processor.py:87 - _download_image() - Method _download_image called for image with index: 1
+2025-12-13 15:34:42 - PID=18904 - DEBUG - cat_image_processor.py:87 - _download_image() - Method _download_image called for image with index: 2
+2025-12-13 15:34:42 - PID=18904 - DEBUG - cat_image_processor.py:87 - _download_image() - Method _download_image called for image with index: 3
+2025-12-13 15:34:42 - PID=18904 - DEBUG - cat_image_processor.py:87 - _download_image() - Method _download_image called for image with index: 4
+2025-12-13 15:34:42 - PID=18904 - DEBUG - cat_image_processor.py:87 - _download_image() - Method _download_image called for image with index: 5
+2025-12-13 15:34:42 - PID=18904 - DEBUG - cat_image_processor.py:87 - _download_image() - Method _download_image called for image with index: 6
+2025-12-13 15:34:42 - PID=18904 - DEBUG - cat_image_processor.py:87 - _download_image() - Method _download_image called for image with index: 7
+2025-12-13 15:34:42 - PID=18904 - DEBUG - cat_image_processor.py:87 - _download_image() - Method _download_image called for image with index: 8
+2025-12-13 15:34:42 - PID=18904 - DEBUG - cat_image_processor.py:87 - _download_image() - Method _download_image called for image with index: 9
+2025-12-13 15:35:13 - PID=18904 - ERROR - cat_image_processor.py:308 - run_async() - Error in run_async: 
+2025-12-13 15:35:13 - PID=18904 - ERROR - main.py:26 - main() - Application failed with error: 

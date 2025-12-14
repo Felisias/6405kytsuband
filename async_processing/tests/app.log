@@ -1,0 +1,51 @@
+2025-12-13 14:43:48 - PID=16948 - DEBUG - proactor_events.py:634 - __init__() - Using proactor: IocpProactor
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:251 - save_image() - Called saving кот processed image - C:\Users\843E~1\AppData\Local\Temp\tmptrtzho75.jpg
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:83 - wrapper() - Method save_image executed in 0.10 seconds
+2025-12-13 14:43:48 - PID=16948 - DEBUG - proactor_events.py:634 - __init__() - Using proactor: IocpProactor
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:275 - save_images_async() - Called saving 1 processed images with cats
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:229 - save_one_dir_async() - Called saving dir for рандомная_порода cat with id = 0
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:251 - save_image() - Called saving рандомная_порода processed image - C:\Users\843E~1\AppData\Local\Temp\tmp62ykbzkj\2025-12-13_14-43-48\0_рандомная_порода\0_рандомная_порода_original.jpg
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:251 - save_image() - Called saving рандомная_порода processed image - C:\Users\843E~1\AppData\Local\Temp\tmp62ykbzkj\2025-12-13_14-43-48\0_рандомная_порода\0_рандомная_порода_custom.jpg
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:251 - save_image() - Called saving рандомная_порода processed image - C:\Users\843E~1\AppData\Local\Temp\tmp62ykbzkj\2025-12-13_14-43-48\0_рандомная_порода\0_рандомная_порода_cv2.jpg
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:83 - wrapper() - Method save_image executed in 0.00 seconds
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:83 - wrapper() - Method save_image executed in 0.00 seconds
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:83 - wrapper() - Method save_image executed in 0.00 seconds
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:83 - wrapper() - Method save_one_dir_async executed in 0.01 seconds
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:83 - wrapper() - Method save_images_async executed in 0.01 seconds
+2025-12-13 14:43:48 - PID=16948 - DEBUG - proactor_events.py:634 - __init__() - Using proactor: IocpProactor
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:275 - save_images_async() - Called saving 1 processed images with cats
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:229 - save_one_dir_async() - Called saving dir for порода cat with id = 0
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:251 - save_image() - Called saving порода processed image - C:\Users\843E~1\AppData\Local\Temp\tmpbbvtvkua\2025-12-13_14-43-48\0_порода\0_порода_original.jpg
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:251 - save_image() - Called saving порода processed image - C:\Users\843E~1\AppData\Local\Temp\tmpbbvtvkua\2025-12-13_14-43-48\0_порода\0_порода_custom.jpg
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:251 - save_image() - Called saving порода processed image - C:\Users\843E~1\AppData\Local\Temp\tmpbbvtvkua\2025-12-13_14-43-48\0_порода\0_порода_cv2.jpg
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:83 - wrapper() - Method save_image executed in 0.00 seconds
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:83 - wrapper() - Method save_image executed in 0.00 seconds
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:83 - wrapper() - Method save_image executed in 0.00 seconds
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:83 - wrapper() - Method save_one_dir_async executed in 0.00 seconds
+2025-12-13 14:43:48 - PID=16948 - DEBUG - cat_image_processor.py:83 - wrapper() - Method save_images_async executed in 0.01 seconds
+2025-12-13 14:45:11 - PID=10176 - INFO - cat_image_processor.py:111 - download_data() - Starting image download (1)
+2025-12-13 14:45:11 - PID=10176 - DEBUG - cat_image_processor.py:118 - download_data() - Requested 1 cats
+2025-12-13 14:45:11 - PID=10176 - DEBUG - cat_image_processor.py:122 - download_data() - Received response with 1 cats
+2025-12-13 14:45:11 - PID=10176 - DEBUG - cat_image_processor.py:125 - download_data() - Requesting cat images
+2025-12-13 14:45:11 - PID=10176 - DEBUG - cat_image_processor.py:83 - wrapper() - Method download_data executed in 0.06 seconds
+2025-12-13 14:45:11 - PID=10176 - DEBUG - base_events.py:708 - close() - Close <ProactorEventLoop running=False closed=False debug=True>
+2025-12-13 15:08:18 - PID=172 - DEBUG - base_events.py:708 - close() - Close <ProactorEventLoop running=False closed=False debug=True>
+2025-12-13 15:10:10 - PID=1920 - DEBUG - base_events.py:708 - close() - Close <ProactorEventLoop running=False closed=False debug=True>
+2025-12-13 15:11:04 - PID=20032 - INFO - cat_image_processor.py:109 - download_data() - Starting image download (1)
+2025-12-13 15:11:04 - PID=20032 - DEBUG - cat_image_processor.py:116 - download_data() - Requested 1 cats
+2025-12-13 15:11:04 - PID=20032 - DEBUG - cat_image_processor.py:120 - download_data() - Received response with 1 cats
+2025-12-13 15:11:04 - PID=20032 - DEBUG - cat_image_processor.py:123 - download_data() - Requesting cat images
+2025-12-13 15:11:04 - PID=20032 - DEBUG - cat_image_processor.py:81 - wrapper() - Method download_data executed in 0.04 seconds
+2025-12-13 15:11:04 - PID=20032 - DEBUG - base_events.py:708 - close() - Close <ProactorEventLoop running=False closed=False debug=True>
+2025-12-13 15:14:53 - PID=4332 - INFO - cat_image_processor.py:109 - download_data() - Starting image download (1)
+2025-12-13 15:14:53 - PID=4332 - DEBUG - cat_image_processor.py:116 - download_data() - Requested 1 cats
+2025-12-13 15:14:53 - PID=4332 - DEBUG - cat_image_processor.py:120 - download_data() - Received response with 1 cats
+2025-12-13 15:14:53 - PID=4332 - DEBUG - cat_image_processor.py:123 - download_data() - Requesting cat images
+2025-12-13 15:14:53 - PID=4332 - DEBUG - cat_image_processor.py:81 - wrapper() - Method download_data executed in 0.01 seconds
+2025-12-13 15:14:53 - PID=4332 - DEBUG - base_events.py:708 - close() - Close <ProactorEventLoop running=False closed=False debug=True>
+2025-12-13 15:22:47 - PID=10092 - INFO - cat_image_processor.py:109 - download_data() - Starting image download (1)
+2025-12-13 15:22:47 - PID=10092 - DEBUG - cat_image_processor.py:116 - download_data() - Requested 1 cats
+2025-12-13 15:22:47 - PID=10092 - DEBUG - cat_image_processor.py:120 - download_data() - Received response with 1 cats
+2025-12-13 15:22:47 - PID=10092 - DEBUG - cat_image_processor.py:123 - download_data() - Requesting cat images
+2025-12-13 15:22:47 - PID=10092 - DEBUG - cat_image_processor.py:81 - wrapper() - Method download_data executed in 0.01 seconds
+2025-12-13 15:22:47 - PID=10092 - DEBUG - base_events.py:708 - close() - Close <ProactorEventLoop running=False closed=False debug=True>
